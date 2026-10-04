@@ -37,7 +37,7 @@ export const PORTFOLIO_DATA = {
     title: "Senior Full Stack & Systems Engineer",
     alias: "root@quantum-box",
     email: "galeedx@gmail.com",
-    github: "https://github.com/Laboratorio-de-arte/Galeed-tui-portfolio",
+    github: "https://github.com/https://github.com/galeed",
     linkedin: "https://linkedin.com",
     twitter: "https://x.com",
     location: "San Francisco, CA // UTC-7",

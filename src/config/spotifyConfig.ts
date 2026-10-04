@@ -48,7 +48,7 @@ export async function getSpotifyActivity(): Promise<SpotifyTrack | null> {
             artist: s.artist,
             album: s.album,
             albumArt: s.album_art_url,
-            songUrl: `https://open.spotify.com/track/${s.track_id}`,
+            songUrl: `https://open.spotify.com/track/1AQQ9DdpEemMVTHNz4eG9a`,
             progressMs: Math.max(0, now - start),
             durationMs: Math.max(1, end - start),
             timestamps: { start, end },

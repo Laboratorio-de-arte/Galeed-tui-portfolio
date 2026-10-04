@@ -1,3 +1,15 @@
+const hasDocument = () => typeof document !== "undefined";
+const hasWindow = () => typeof window !== "undefined";
+
+const getStorage = () => {
+  try {
+    if (typeof localStorage === "undefined") return null;
+    return localStorage;
+  } catch {
+    return null;
+  }
+};
+
 export interface ThemeColorPalette {
   bgMain: string;
   bgCard: string;
@@ -21,7 +33,7 @@ export interface CRTConfig {
   enabled: boolean;
   intensity: CRTIntensityLevel;
   scanlineOpacity: number; // 0.0 (off) to 1.0 (heavy)
-  vignetteOpacity: number;  // 0.0 (off) to 1.0 (heavy)
+  vignetteOpacity: number; // 0.0 (off) to 1.0 (heavy)
 }
 
 export interface ThemeConfig {
@@ -203,6 +215,8 @@ export const ALL_THEMES: ThemeConfig[] = [...BUILTIN_THEMES, ...CUSTOM_THEMES];
  * Helper utility to apply theme CSS variables to the document root element
  */
 export function applyTheme(themeId: string) {
+  if (!hasDocument()) return;
+
   const theme = ALL_THEMES.find((t) => t.id === themeId) || BUILTIN_THEMES[0];
   const root = document.documentElement;
 
@@ -230,17 +244,20 @@ export function applyTheme(themeId: string) {
  * Apply CRT filter settings, intensity presets, and opacity values dynamically
  */
 export function applyCRTConfig(config: Partial<CRTConfig> = {}) {
+  if (!hasDocument() || !hasWindow()) return;
+
   const root = document.documentElement;
+  const storage = getStorage();
   const isMobile = window.innerWidth < 768 || /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
 
   let enabled: boolean;
   if (config.enabled !== undefined) {
     enabled = config.enabled;
-    if (!isMobile) {
-      localStorage.setItem("tui_crt", String(enabled));
+    if (!isMobile && storage) {
+      storage.setItem("tui_crt", String(enabled));
     }
   } else {
-    const saved = localStorage.getItem("tui_crt");
+    const saved = storage ? storage.getItem("tui_crt") : null;
     enabled = saved !== null ? saved === "true" : GLOBAL_CRT_CONFIG.enabled;
   }
 
@@ -253,7 +270,9 @@ export function applyCRTConfig(config: Partial<CRTConfig> = {}) {
     const preset = CRT_PRESETS[config.intensity];
     scanlineOpacity = preset.scanlineOpacity;
     vignetteOpacity = preset.vignetteOpacity;
-    localStorage.setItem("tui_crt_intensity", config.intensity);
+    if (storage) {
+      storage.setItem("tui_crt_intensity", config.intensity);
+    }
   }
 
   if (scanlineOpacity === undefined) {
